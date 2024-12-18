@@ -15,7 +15,10 @@ import {
   ListItemText,
   ListItemButton,
   Stack,
-  Chip
+  Chip,
+  IconButton,
+  Menu,
+  MenuItem
 } from '@mui/material';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -28,7 +31,11 @@ import ComputerIcon from '@mui/icons-material/Computer';
 import TheatersIcon from '@mui/icons-material/Theaters';
 import LifestyleIcon from '@mui/icons-material/Style';
 import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { useState } from 'react';
+import Recommendations from './components/Recommendations';
+import { debounce } from '@mui/material/utils';
+import Settings from './components/Settings';
 
 const drawerWidth = 200;
 
@@ -86,10 +93,27 @@ const topicChips = {
 
 function App() {
   const [selectedTopic, setSelectedTopic] = useState(null);
+  const [selectedSubtopic, setSelectedSubtopic] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const handleChipClick = debounce((chip) => {
+    setSelectedSubtopic(chip);
+  }, 300);
 
   const handleTopicClick = (href) => {
     const topic = href.replace('#', '');
     setSelectedTopic(topic);
+    setSelectedSubtopic(null);
+  };
+
+  const handleSettingsClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleSettingsClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -133,6 +157,29 @@ function App() {
               Growth Sage
             </Typography>
           </Stack>
+          
+          <IconButton
+            color="inherit"
+            onClick={handleSettingsClick}
+            sx={{ ml: 2 }}
+          >
+            <SettingsIcon />
+          </IconButton>
+          
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleSettingsClose}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={() => {
+              handleSettingsClose();
+              setSettingsOpen(true);
+            }}>
+              User Settings
+            </MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
 
@@ -237,42 +284,73 @@ function App() {
           }}
         >
           {selectedTopic && (
-            <Stack 
-              direction="row" 
-              spacing={1} 
-              flexWrap="wrap" 
-              gap={1}
-              sx={{ 
-                p: 2,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              {topicChips[selectedTopic]?.map((chip) => (
-                <Chip
-                  key={chip}
-                  label={chip}
-                  sx={{
-                    backgroundColor: '#f0f2f5',
-                    '&:hover': {
-                      backgroundColor: '#e4e6eb',
-                    },
-                    fontWeight: 500,
-                    fontSize: '1rem',
-                    height: '40px',
-                    borderRadius: '20px',
-                    '& .MuiChip-label': {
-                      padding: '0 16px'
-                    }
-                  }}
-                  clickable
-                />
-              ))}
-            </Stack>
+            <>
+              <Typography 
+                variant="h4" 
+                sx={{ 
+                  textAlign: 'center',
+                  mb: 4,
+                  fontWeight: 700,
+                  color: '#2e7d32',
+                  borderBottom: '3px solid #2e7d32',
+                  pb: 1,
+                  display: 'inline-block',
+                  margin: '0 auto 2rem',
+                  position: 'relative',
+                  left: '50%',
+                  transform: 'translateX(-50%)'
+                }}
+              >
+                {navItems.find(item => item.href === `#${selectedTopic}`)?.text}
+              </Typography>
+              <Stack 
+                direction="row" 
+                spacing={1} 
+                flexWrap="wrap" 
+                gap={1}
+                sx={{ 
+                  p: 2,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                {topicChips[selectedTopic]?.map((chip) => (
+                  <Chip
+                    key={chip}
+                    label={chip}
+                    onClick={() => handleChipClick(chip)}
+                    sx={{
+                      backgroundColor: '#f0f2f5',
+                      '&:hover': {
+                        backgroundColor: '#e4e6eb',
+                      },
+                      fontWeight: 500,
+                      fontSize: '1rem',
+                      height: '40px',
+                      borderRadius: '20px',
+                      '& .MuiChip-label': {
+                        padding: '0 16px'
+                      }
+                    }}
+                    clickable
+                  />
+                ))}
+              </Stack>
+            </>
+          )}
+          {selectedTopic && selectedSubtopic && (
+            <Recommendations 
+              topic={selectedTopic} 
+              subtopic={selectedSubtopic}
+            />
           )}
         </Box>
       </Box>
+      <Settings 
+        open={settingsOpen} 
+        onClose={() => setSettingsOpen(false)} 
+      />
     </div>
   );
 }
