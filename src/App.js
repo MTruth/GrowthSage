@@ -216,36 +216,62 @@ function App() {
           flexGrow: 1,
           p: 3,
           ml: `${0}px`,
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f0f2f5',
           minHeight: '100vh',
-          pt: 8
+          pt: 8,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start'
         }}
       >
-        {selectedTopic && (
-          <Stack 
-            direction="row" 
-            spacing={1} 
-            flexWrap="wrap" 
-            gap={1}
-            sx={{ p: 2 }}
-          >
-            {topicChips[selectedTopic]?.map((chip) => (
-              <Chip
-                key={chip}
-                label={chip}
-                sx={{
-                  backgroundColor: '#f0f2f5',
-                  '&:hover': {
-                    backgroundColor: '#e4e6eb',
-                  },
-                  fontWeight: 500,
-                  fontSize: '0.9rem'
-                }}
-                clickable
-              />
-            ))}
-          </Stack>
-        )}
+        <Box
+          sx={{
+            width: '95%',
+            maxWidth: 1200,
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+            mt: 2,
+            p: 3,
+            minHeight: '80vh'
+          }}
+        >
+          {selectedTopic && (
+            <Stack 
+              direction="row" 
+              spacing={1} 
+              flexWrap="wrap" 
+              gap={1}
+              sx={{ 
+                p: 2,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              {topicChips[selectedTopic]?.map((chip) => (
+                <Chip
+                  key={chip}
+                  label={chip}
+                  sx={{
+                    backgroundColor: '#f0f2f5',
+                    '&:hover': {
+                      backgroundColor: '#e4e6eb',
+                    },
+                    fontWeight: 500,
+                    fontSize: '1rem',
+                    height: '40px',
+                    borderRadius: '20px',
+                    '& .MuiChip-label': {
+                      padding: '0 16px'
+                    }
+                  }}
+                  clickable
+                />
+              ))}
+            </Stack>
+          )}
+        </Box>
       </Box>
     </div>
   );
